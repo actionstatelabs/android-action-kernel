@@ -52,6 +52,7 @@ But **real work happens on mobile devices** in places where laptops don't fit:
 Watch Android Use automate an entire logistics workflow:
 
 ### Before (Manual - 10+ minutes)
+
 ```
 1. Driver takes photo of Bill of Lading
 2. Opens WhatsApp, sends to back office
@@ -62,6 +63,7 @@ Watch Android Use automate an entire logistics workflow:
 ```
 
 ### After (Automated - 30 seconds)
+
 ```python
 # Driver just texts the photo. Agent does the rest.
 run_agent("""
@@ -84,6 +86,7 @@ run_agent("""
 <td width="50%">
 
 ### 🚫 Computer Use (Anthropic)
+
 - Requires desktop/laptop
 - Takes screenshots → OCR
 - Sends images to vision model
@@ -95,6 +98,7 @@ run_agent("""
 <td width="50%">
 
 ### ✅ Android Use (This Library)
+
 - Works on handheld devices
 - Reads accessibility tree (XML)
 - Structured data → LLM
@@ -128,13 +132,13 @@ Launched **24 hours ago** with the logistics demo:
 
 ## 📊 The Market: Mobile-First Industries
 
-| Industry | Why They Need This | Market Size | Current State |
-|----------|-------------------|-------------|---------------|
-| **🚛 Logistics** | Drivers use factoring apps (RTS Pro, OTR Capital) in truck cabs | **$10.5T** | Manual, no laptop access |
-| **🚗 Gig Economy** | Uber/Lyft/DoorDash drivers optimize between apps on phones | **$455B** | Tap manually, lose 20% earnings |
-| **📦 Last-Mile** | Amazon Flex, UPS drivers scan packages on handhelds | **$500B+** | Proprietary apps, no APIs |
-| **🏗️ Field Services** | Techs log work orders on tablets on-site | **$200B+** | Mobile-only workflows |
-| **🏦 Mobile Banking** | Treasury ops, reconciliation on native banking apps | **$28T** | 2FA + biometric locks |
+| Industry              | Why They Need This                                              | Market Size | Current State                   |
+| --------------------- | --------------------------------------------------------------- | ----------- | ------------------------------- |
+| **🚛 Logistics**      | Drivers use factoring apps (RTS Pro, OTR Capital) in truck cabs | **$10.5T**  | Manual, no laptop access        |
+| **🚗 Gig Economy**    | Uber/Lyft/DoorDash drivers optimize between apps on phones      | **$455B**   | Tap manually, lose 20% earnings |
+| **📦 Last-Mile**      | Amazon Flex, UPS drivers scan packages on handhelds             | **$500B+**  | Proprietary apps, no APIs       |
+| **🏗️ Field Services** | Techs log work orders on tablets on-site                        | **$200B+**  | Mobile-only workflows           |
+| **🏦 Mobile Banking** | Treasury ops, reconciliation on native banking apps             | **$28T**    | 2FA + biometric locks           |
 
 **Total: $40+ trillion in GDP from mobile-first workflows**
 
@@ -145,6 +149,7 @@ Browser agents can't reach these. Desktop agents don't fit. **Android Use is the
 ## 🚀 Quick Start (60 Seconds)
 
 ### Prerequisites
+
 - Python 3.10+
 - Android device or emulator (USB debugging enabled)
 - ADB (Android Debug Bridge)
@@ -172,6 +177,7 @@ export OPENAI_API_KEY="sk-..."
 
 # 6. Run your first agent
 python kernel.py
+# python kernel-genai.py # For GenAI users
 ```
 
 ### Try It: Logistics Example
@@ -181,12 +187,13 @@ from kernel import run_agent
 
 # Automate the workflow from the viral demo
 run_agent("""
-Open WhatsApp, get the latest image, 
+Open WhatsApp, get the latest image,
 then open the invoice app and fill out the form
 """)
 ```
 
 **Other examples:**
+
 - `"Accept the next DoorDash delivery and navigate to restaurant"`
 - `"Scan all packages and mark them delivered in the driver app"`
 - `"Check Chase mobile for today's transactions"`
@@ -196,51 +203,61 @@ then open the invoice app and fill out the form
 ## 💼 Use Cases Beyond Logistics
 
 ### 🚗 Gig Economy Multi-Apping
+
 **Problem:** Drivers lose 20%+ earnings manually switching between DoorDash, Uber Eats, Instacart.
 
 ```python
 run_agent("Monitor all delivery apps, accept the highest paying order")
 ```
+
 **Impact:** Instant acceptance, maximize earnings, reduce downtime.
 
 ---
 
 ### 📦 Package Scanning Automation
+
 **Problem:** Drivers manually scan 200+ packages/day in proprietary apps.
 
 ```python
 run_agent("Scan all packages in photo and mark as loaded in Amazon Flex")
 ```
+
 **Impact:** Bulk scanning, eliminate manual entry, speed up loading.
 
 ---
 
 ### 🏦 Mobile Banking Operations
+
 **Problem:** Treasury teams reconcile transactions across multiple mobile banking apps.
 
 ```python
 run_agent("Log into Chase mobile and export today's wire transfers")
 ```
+
 **Impact:** Automate reconciliation, fraud detection, compliance.
 
 ---
 
 ### 🏥 Healthcare Mobile Workflows
+
 **Problem:** Staff extract patient data from HIPAA-locked mobile portals.
 
 ```python
 run_agent("Open Epic MyChart and download lab results for patient 12345")
 ```
+
 **Impact:** Data extraction, appointment booking, records management.
 
 ---
 
 ### 🧪 Mobile App QA Testing
+
 **Problem:** Manual testing of Android apps is slow and expensive.
 
 ```python
 run_agent("Create account, complete onboarding, make test purchase")
 ```
+
 **Impact:** Automated E2E testing, regression tests, CI/CD integration.
 
 ---
@@ -297,10 +314,10 @@ run_agent("Create account, complete onboarding, make test purchase")
 
 ### Why Accessibility Tree > Screenshots
 
-| Approach | Cost | Speed | Accuracy | Works on Device |
-|----------|------|-------|----------|----------------|
-| **Screenshots (Computer Use)** | $0.15/action | 3-5s | 70-80% | ❌ Desktop only |
-| **Accessibility Tree (Android Use)** | $0.01/action | <1s | 99%+ | ✅ Handheld devices |
+| Approach                             | Cost         | Speed | Accuracy | Works on Device     |
+| ------------------------------------ | ------------ | ----- | -------- | ------------------- |
+| **Screenshots (Computer Use)**       | $0.15/action | 3-5s  | 70-80%   | ❌ Desktop only     |
+| **Accessibility Tree (Android Use)** | $0.01/action | <1s   | 99%+     | ✅ Handheld devices |
 
 **Technical advantage:** Accessibility tree provides structured data (text, coordinates, hierarchy) without image encoding/OCR.
 
@@ -370,24 +387,28 @@ screen_json = get_screen_state()
 ## 🗺️ Roadmap
 
 ### ✅ Now (MVP - 48 hours)
+
 - [x] Core agent loop (perception → reasoning → action)
 - [x] Accessibility tree parsing
 - [x] GPT-4 integration
 - [x] Basic actions (tap, type, navigate)
 
 ### 🚧 Next 2 Weeks
+
 - [ ] **PyPI package:** `pip install android-use`
 - [ ] **Multi-LLM support:** Claude, Gemini, Llama
 - [ ] **WhatsApp integration:** Pre-built actions for messaging
 - [ ] **Error recovery:** Retry logic, fallback strategies
 
 ### 🔮 Next 3 Months
+
 - [ ] **App-specific agents:** Pre-trained for RTS Pro, OTR Capital, factoring apps
 - [ ] **Cloud device farms:** Run at scale on AWS Device Farm, BrowserStack
 - [ ] **Vision augmentation:** Screenshot fallback when accessibility insufficient
 - [ ] **Multi-step memory:** Remember context across sessions
 
 ### 🚀 Long-term Vision
+
 - [ ] **Hosted Cloud API:** No-code agent execution (waitlist below)
 - [ ] **Agent marketplace:** Buy/sell vertical-specific automations
 - [ ] **Enterprise platform:** SOC2, audit logs, PII redaction, fleet management
@@ -400,6 +421,7 @@ screen_json = get_screen_state()
 **Don't want to host it yourself?** Join the waitlist for our managed Cloud API.
 
 **What you get:**
+
 - ✅ No device setup required
 - ✅ Scale to 1000s of simultaneous agents
 - ✅ Pre-built integrations (WhatsApp, factoring apps, etc.)
@@ -414,6 +436,7 @@ screen_json = get_screen_state()
 **Want to help build the future of mobile AI agents?**
 
 ### 🔥 High Priority
+
 - **Logistics app templates:** RTS Pro, OTR Capital, Axle, TriumPay integrations
 - **WhatsApp automation:** Message parsing, image extraction
 - **Error handling:** Robustness for unreliable connections (truck cabs!)
@@ -421,6 +444,7 @@ screen_json = get_screen_state()
 - **Testing:** E2E tests for common workflows
 
 ### How to Contribute
+
 1. ⭐ **Star this repo** (most important!)
 2. 🍴 Fork it
 3. 🌿 Create branch: `git checkout -b feature/factoring-app-support`
@@ -461,7 +485,7 @@ Support the project
 
 Help logistics companies find this
 
-[Tweet →](https://twitter.com/intent/tweet?text=🚛%20Game%20changer%20for%20logistics!%20Android%20Use%20lets%20AI%20agents%20control%20native%20Android%20apps.%0A%0A✅%20Works%20in%20truck%20cabs%20(no%20laptop%20needed)%0A✅%2095%25%20cheaper%20than%20Computer%20Use%0A✅%20Automates%20factoring%20apps,%20WhatsApp,%20more%0A%0A4M%20views!%0A%0A&url=https://github.com/actionstatelabs/android-action-kernel&via=ethanjlim)
+[Tweet →](<https://twitter.com/intent/tweet?text=🚛%20Game%20changer%20for%20logistics!%20Android%20Use%20lets%20AI%20agents%20control%20native%20Android%20apps.%0A%0A✅%20Works%20in%20truck%20cabs%20(no%20laptop%20needed)%0A✅%2095%25%20cheaper%20than%20Computer%20Use%0A✅%20Automates%20factoring%20apps,%20WhatsApp,%20more%0A%0A4M%20views!%0A%0A&url=https://github.com/actionstatelabs/android-action-kernel&via=ethanjlim>)
 
 </td>
 <td align="center" width="33%">
@@ -496,17 +520,19 @@ Progress: ████░░░░░░░░░░░░░░░░░░░�
 
 I was interviewing truck drivers for a logistics automation project. One driver showed me his phone and said:
 
-> *"I have to manually type invoice data from this Bill of Lading photo into the RTS Pro app. Takes 10 minutes every delivery. I can't use a laptop because it doesn't fit in the cab."*
+> _"I have to manually type invoice data from this Bill of Lading photo into the RTS Pro app. Takes 10 minutes every delivery. I can't use a laptop because it doesn't fit in the cab."_
 
 That's when it clicked: **AI agents exist for web and desktop, but the real economy runs on handheld devices.**
 
 I looked at existing solutions:
+
 - **Browser Use:** Only works on websites ❌
 - **Computer Use:** Requires a laptop ($0.15/action, vision model) ❌
 
 Neither solved the truck cab problem. So I built Android Use in 48 hours using Android's accessibility API.
 
 **The result:**
+
 - 95% cheaper (accessibility tree vs vision)
 - 5x faster (<1s latency)
 - Works on handheld devices ✅
@@ -541,6 +567,7 @@ This started as a library for developers. But based on demand, we're building:
 ## 📊 By the Numbers
 
 **Since launch (24 hours ago):**
+
 - 👀 **4,000,000+** views on X
 - ⭐ **12** GitHub stars (help us get to 1,000!)
 - 💬 **150+** DMs from companies
@@ -548,6 +575,7 @@ This started as a library for developers. But based on demand, we're building:
 - 🏦 **3** factoring company partnership discussions
 
 **Market data:**
+
 - 🚛 **3.5M** truck drivers in US alone
 - 📦 **60M** gig economy workers globally
 - 💰 **$40T+** in mobile-first GDP
@@ -567,12 +595,14 @@ MIT License - see [LICENSE](LICENSE)
 ## 🙏 Acknowledgments
 
 Built on:
+
 - [Browser Use](https://github.com/browser-use/browser-use) - Web agent inspiration
 - [Anthropic Computer Use](https://www.anthropic.com/news/computer-use) - Proved UI control works
 - Android Accessibility API - The enabling technology
 - **The 4 million people who watched and validated this need**
 
 Special thanks to:
+
 - Truck drivers who showed me the real problem
 - Early beta testers in logistics
 - Everyone sharing and supporting this project
