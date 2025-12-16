@@ -135,28 +135,40 @@ def execute_action(action: Dict[str, Any]) -> bool:
     
     return False
 
-def get_llm_decision(goal: str, screen_context: str, retry_count: int = 0) -> Dict[str, Any]:
+def get_llm_decision(goal: str, screen_context: str, action_history: List[Dict[str, Any]], retry_count: int = 0) -> Dict[str, Any]:
     """Sends screen context to LLM and asks for the next move."""
-    system_prompt = """
-    You are an Android Driver Agent. Your job is to achieve the user's goal by navigating the UI.
+    system_prompt = """You are an Android Driver Agent. Your job is to achieve the user's goal by navigating the UI.
+
+You will receive:
+1. The User's Goal.
+2. A list of interactive UI elements (JSON) with their (x,y) center coordinates.
+3. Your previous actions (so you don't repeat yourself).
+
+You must output ONLY a valid JSON object with your next action.
+
+Available Actions:
+- {"action": "tap", "coordinates": [x, y], "reason": "Why you are tapping"}
+- {"action": "type", "text": "Hello World", "reason": "Why you are typing"}
+- {"action": "home", "reason": "Go to home screen"}
+- {"action": "back", "reason": "Go back"}
+- {"action": "wait", "reason": "Wait for loading"}
+- {"action": "done", "reason": "Task complete"}
+
+IMPORTANT WORKFLOW RULES:
+1. To enter text in a search box or text field: FIRST tap the field, THEN on the next step use "type" to enter text.
+2. If you already tapped a text field in your previous action, your next action should be "type" with the text you want to enter.
+3. Do NOT tap the same element repeatedly. If you tapped something and nothing changed, try a different approach.
+4. After typing in a search field, you may need to tap a search/submit button or press enter.
+
+Example - Searching for something:
+Step 1: {"action": "tap", "coordinates": [540, 100], "reason": "Tapping search box to focus it"}
+Step 2: {"action": "type", "text": "pizza near me", "reason": "Typing search query"}
+Step 3: {"action": "tap", "coordinates": [900, 100], "reason": "Tapping search button to submit"}
+"""
     
-    You will receive:
-    1. The User's Goal.
-    2. A list of interactive UI elements (JSON) with their (x,y) center coordinates.
-    
-    You must output ONLY a valid JSON object with your next action.
-    
-    Available Actions:
-    - {"action": "tap", "coordinates": [x, y], "reason": "Why you are tapping"}
-    - {"action": "type", "text": "Hello World", "reason": "Why you are typing"}
-    - {"action": "home", "reason": "Go to home screen"}
-    - {"action": "back", "reason": "Go back"}
-    - {"action": "wait", "reason": "Wait for loading"}
-    - {"action": "done", "reason": "Task complete"}
-    
-    Example Output:
-    {"action": "tap", "coordinates": [540, 1200], "reason": "Clicking the 'Connect' button"}
-    """
+    history_str = ""
+    if action_history:
+        history_str = "\n\nPREVIOUS_ACTIONS:\n" + json.dumps(action_history[-5:], indent=2)  # Last 5 actions
     
     try:
         response = client.chat.completions.create(
@@ -164,7 +176,7 @@ def get_llm_decision(goal: str, screen_context: str, retry_count: int = 0) -> Di
             response_format={"type": "json_object"},
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"GOAL: {goal}\n\nSCREEN_CONTEXT:\n{screen_context}"}
+                {"role": "user", "content": f"GOAL: {goal}\n\nSCREEN_CONTEXT:\n{screen_context}{history_str}"}
             ]
         )
         
@@ -175,7 +187,7 @@ def get_llm_decision(goal: str, screen_context: str, retry_count: int = 0) -> Di
         if validation_error:
             if retry_count < 1:
                 print(f"⚠️ Invalid action from LLM: {validation_error}. Retrying...")
-                return get_llm_decision(goal, screen_context, retry_count + 1)
+                return get_llm_decision(goal, screen_context, action_history, retry_count + 1)
             else:
                 raise ValueError(f"LLM returned invalid action after retry: {validation_error}")
         
@@ -184,7 +196,7 @@ def get_llm_decision(goal: str, screen_context: str, retry_count: int = 0) -> Di
     except json.JSONDecodeError as e:
         if retry_count < 1:
             print(f"⚠️ Failed to parse LLM response as JSON: {e}. Retrying...")
-            return get_llm_decision(goal, screen_context, retry_count + 1)
+            return get_llm_decision(goal, screen_context, action_history, retry_count + 1)
         else:
             raise ValueError(f"LLM did not return valid JSON after retry: {e}")
 
@@ -192,6 +204,8 @@ def run_agent(goal: str, max_steps: int = 10) -> bool:
     """Runs the agent loop. Returns True if goal achieved, False if max_steps reached."""
     print(f"🚀 Android Use Agent Started. Goal: {goal}")
     print(f"📡 Using provider: {LLM_PROVIDER} | Model: {MODEL}")
+    
+    action_history: List[Dict[str, Any]] = []
     
     for step in range(max_steps):
         print(f"\n--- Step {step + 1} ---")
@@ -202,8 +216,17 @@ def run_agent(goal: str, max_steps: int = 10) -> bool:
         
         # 2. Reasoning
         print("🧠 Thinking...")
-        decision = get_llm_decision(goal, screen_context)
+        decision = get_llm_decision(goal, screen_context, action_history)
         print(f"💡 Decision: {decision.get('reason')}")
+        
+        # Track action history (store a summary)
+        action_history.append({
+            "step": step + 1,
+            "action": decision.get("action"),
+            "coordinates": decision.get("coordinates"),
+            "text": decision.get("text"),
+            "reason": decision.get("reason")
+        })
         
         # 3. Action
         goal_achieved = execute_action(decision)
