@@ -80,7 +80,7 @@ def validate_action(action: Dict[str, Any]) -> Optional[str]:
         return "Action must be a dictionary"
     
     act_type = action.get("action")
-    valid_actions = {"tap", "type", "home", "back", "wait", "done"}
+    valid_actions = {"tap", "type", "home", "back", "wait", "done", "enter", "clear"}
     
     if act_type not in valid_actions:
         return f"Unknown action '{act_type}'. Must be one of: {valid_actions}"
@@ -129,6 +129,19 @@ def execute_action(action: Dict[str, Any]) -> bool:
         print("⏳ Waiting...")
         time.sleep(2)
         
+    elif act_type == "enter":
+        print("⏎ Pressing Enter")
+        run_adb_command(["shell", "input", "keyevent", "KEYCODE_ENTER"])
+        
+    elif act_type == "clear":
+        print("🗑️ Clearing text field")
+        # Select all (Ctrl+A) then delete
+        run_adb_command(["shell", "input", "keyevent", "KEYCODE_MOVE_END"])  # Move to end
+        run_adb_command(["shell", "input", "keyevent", "--longpress", "KEYCODE_DEL"])  # Long-press delete
+        # Fallback: try select-all + delete
+        run_adb_command(["shell", "input", "keycombination", "KEYCODE_CTRL_LEFT", "KEYCODE_A"])  # Select all
+        run_adb_command(["shell", "input", "keyevent", "KEYCODE_DEL"])  # Delete selection
+        
     elif act_type == "done":
         print("✅ Goal Achieved.")
         return True
@@ -149,6 +162,8 @@ You must output ONLY a valid JSON object with your next action.
 Available Actions:
 - {"action": "tap", "coordinates": [x, y], "reason": "Why you are tapping"}
 - {"action": "type", "text": "Hello World", "reason": "Why you are typing"}
+- {"action": "clear", "reason": "Clear/delete text in focused field"}
+- {"action": "enter", "reason": "Press Enter/Submit key"}
 - {"action": "home", "reason": "Go to home screen"}
 - {"action": "back", "reason": "Go back"}
 - {"action": "wait", "reason": "Wait for loading"}
@@ -157,13 +172,14 @@ Available Actions:
 IMPORTANT WORKFLOW RULES:
 1. To enter text in a search box or text field: FIRST tap the field, THEN on the next step use "type" to enter text.
 2. If you already tapped a text field in your previous action, your next action should be "type" with the text you want to enter.
-3. Do NOT tap the same element repeatedly. If you tapped something and nothing changed, try a different approach.
-4. After typing in a search field, you may need to tap a search/submit button or press enter.
+3. If a text field already has text and you need to replace it, use "clear" first, then "type" the new text.
+4. After typing in a search field, use "enter" to submit the search. This is more reliable than tapping a search button.
+5. Do NOT tap the same element repeatedly. If you tapped something and nothing changed, try a different approach.
 
 Example - Searching for something:
 Step 1: {"action": "tap", "coordinates": [540, 100], "reason": "Tapping search box to focus it"}
 Step 2: {"action": "type", "text": "pizza near me", "reason": "Typing search query"}
-Step 3: {"action": "tap", "coordinates": [900, 100], "reason": "Tapping search button to submit"}
+Step 3: {"action": "enter", "reason": "Submitting the search query"}
 """
     
     history_str = ""
