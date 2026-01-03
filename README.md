@@ -23,7 +23,7 @@
 
 **[Watch it automate a logistics workflow in 60 seconds](https://x.com/ethanjlim/status/1999152070428148108?s=20)**
 
-<sub>Driver texts a photo → Agent handles WhatsApp → Scanner app → Banking app → Invoice submitted</sub>
+<sub>Driver texts a photo → Agent opens WhatsApp → uses scanner app → opens banking app → submits invoice</sub>
 
 <br>
 
@@ -55,7 +55,7 @@ But the real economy runs on mobile devices, in places where laptops don't fit:
 
 **Priority partnership area.** Android Use automating an entire logistics workflow:
 
-### Before (Manual - 10+ minutes)
+### Before — Manual (10+ minutes)
 ```
 1. Driver takes photo of Bill of Lading
 2. Opens WhatsApp, sends to back office
@@ -65,7 +65,7 @@ But the real economy runs on mobile devices, in places where laptops don't fit:
 6. Submits for payment
 ```
 
-### After (Automated - 30 seconds)
+### After — Automated (30 seconds)
 ```python
 # Driver just texts the photo. Agent does the rest.
 run_agent("""
@@ -178,7 +178,7 @@ brew install android-platform-tools  # macOS
 # 4. Connect device & verify
 adb devices
 
-# 5. Set API key
+# 5. Set your OpenAI API key:
 export OPENAI_API_KEY="sk-..."
 
 # 6. Run your first agent
